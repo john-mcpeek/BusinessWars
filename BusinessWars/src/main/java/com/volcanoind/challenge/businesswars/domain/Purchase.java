@@ -20,12 +20,12 @@ public class Purchase extends Item {
 	@JsonProperty( "trans-id" )
 	private String transId;
 
-	public Purchase(StockAvailable stockAvail, int qtyPurchased, String transId) {
-		super( stockAvail.getSku(), stockAvail.getName(), stockAvail.getPrice() );
+	public Purchase(Product product, int qtyPurchased, String transId) {
+		super( product.getSku(), product.getName(), product.getPrice() );
 
 		this.qtyPurchased = qtyPurchased;
 		this.transId = transId;
 
-		this.total = stockAvail.getPrice().multiply( new BigDecimal( qtyPurchased ) ).setScale( 2 );
+		this.total = product.getPrice().multiply( new BigDecimal( qtyPurchased ) );
 	}
 }

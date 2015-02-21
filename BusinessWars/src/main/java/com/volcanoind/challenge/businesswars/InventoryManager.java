@@ -22,13 +22,13 @@ import org.springframework.stereotype.Component;
 
 import com.volcanoind.challenge.businesswars.domain.Bid;
 import com.volcanoind.challenge.businesswars.domain.Purchase;
-import com.volcanoind.challenge.businesswars.domain.StockAvailable;
+import com.volcanoind.challenge.businesswars.domain.Product;
 import com.volcanoind.challenge.businesswars.exceptions.PriceMismatchException;
 import com.volcanoind.challenge.businesswars.exceptions.ProductNotFoundException;
 
 @Component
 public class InventoryManager {
-	private Map<String, StockAvailable> stockOnHand = new HashMap<String, StockAvailable>();
+	private Map<String, Product> stockOnHand = new HashMap<String, Product>();
 	
 	private List<Purchase> history = Collections.synchronizedList( new ArrayList<Purchase>() );
 
@@ -46,41 +46,41 @@ public class InventoryManager {
 				String price = record.get( "price" );
 				String qty = record.get( "qty" );
 
-				StockAvailable stockItem = new StockAvailable( sku, name, price, qty );
-				stockOnHand.put( stockItem.getSku(), stockItem );
+				Product product = new Product( sku, name, price, qty );
+				stockOnHand.put( product.getSku(), product );
 			}
 		}
 	}
 
-	public Collection<StockAvailable> getProducts() {
+	public Collection<Product> getProducts() {
 		return stockOnHand.values();
 	}
 
-	public StockAvailable getQuote(String sku) {
-		StockAvailable stock = stockOnHand.get( sku );
+	public Product getQuote(String sku) {
+		Product product = stockOnHand.get( sku );
 		
-		if ( stock == null ) {
+		if ( product == null ) {
 			throw new ProductNotFoundException();
 		}
 		
-		return stock;
+		return product;
 	}
 
 	public Purchase buyItem(Bid bid) {
-		StockAvailable stock = stockOnHand.get( bid.getSku() );
+		Product product = stockOnHand.get( bid.getSku() );
 		
-		if ( stock == null ) {
+		if ( product == null ) {
 			throw new ProductNotFoundException();
 		}
 
-		synchronized ( stock ) {
+		synchronized ( product ) {
 			BigDecimal price = bid.getPrice();
-			if ( stock.getPrice().compareTo( price ) != 0 ) {
-				throw new PriceMismatchException( price, stock.getPrice() );
+			if ( product.getPrice().compareTo( price ) != 0 ) {
+				throw new PriceMismatchException( price, product.getPrice() );
 			}
 
-			int takenFromStock = stock.takeFromStock( bid );
-			Purchase puchase = new Purchase( stock, takenFromStock, UUID.randomUUID().toString() );
+			int takenFromStock = product.takeFromStock( bid );
+			Purchase puchase = new Purchase( product, takenFromStock, UUID.randomUUID().toString() );
 			history.add( puchase );
 
 			return puchase;

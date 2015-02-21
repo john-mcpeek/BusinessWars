@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.volcanoind.challenge.businesswars.domain.Bid;
 import com.volcanoind.challenge.businesswars.domain.Purchase;
-import com.volcanoind.challenge.businesswars.domain.StockAvailable;
+import com.volcanoind.challenge.businesswars.domain.Product;
 
 @Controller
 public class BusinessWarsController {
@@ -23,13 +23,13 @@ public class BusinessWarsController {
 	
 	@RequestMapping( value = "/products", method = RequestMethod.GET )
 	@ResponseBody
-	public Collection<StockAvailable> products() {
+	public Collection<Product> products() {
 		return invMgr.getProducts();
 	}
 	
 	@RequestMapping( value = "/inventory/{sku}", method = RequestMethod.GET )
 	@ResponseBody
-	public StockAvailable inventory(@PathVariable String sku) {
+	public Product inventory(@PathVariable String sku) {
 		return invMgr.getQuote( sku );
 	}
 	

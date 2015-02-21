@@ -11,17 +11,17 @@ import com.volcanoind.challenge.businesswars.exceptions.InsufficientStockExcepti
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode( callSuper = true )
-public class StockAvailable extends Item {
+public class Product extends Item {
 	protected int qty;
 
-	public StockAvailable(String sku, String name, String price, String qty) {
+	public Product(String sku, String name, String price, String qty) {
 		this.sku = sku;
 		this.name = name;
 		this.price = new BigDecimal( price );
 		this.qty = Integer.parseInt( qty );
 	}
 
-	public StockAvailable(String sku, String name, BigDecimal price, int qty) {
+	public Product(String sku, String name, BigDecimal price, int qty) {
 		super( sku, name, price );
 
 		this.qty = qty;

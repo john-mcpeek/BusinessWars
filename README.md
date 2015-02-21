@@ -2,6 +2,6 @@
 
 Business Wars implemented in Java and Spring.
 
-## build
+## Build
 
 Build with maven...

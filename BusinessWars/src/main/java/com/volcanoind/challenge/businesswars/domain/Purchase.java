@@ -5,12 +5,14 @@ import java.math.BigDecimal;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode( callSuper = true )
+@ToString(callSuper=true, includeFieldNames=true)
 public class Purchase extends Item {
 	@JsonProperty( "qty-purchased" )
 	private int qtyPurchased;

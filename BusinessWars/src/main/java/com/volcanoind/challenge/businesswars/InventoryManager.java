@@ -28,9 +28,9 @@ import com.volcanoind.challenge.businesswars.exceptions.ProductNotFoundException
 
 @Component
 public class InventoryManager {
-	private Map<String, Product> stockOnHand = new HashMap<String, Product>();
+	protected Map<String, Product> stockOnHand = new HashMap<String, Product>();
 	
-	private List<Purchase> history = Collections.synchronizedList( new ArrayList<Purchase>() );
+	protected List<Purchase> history = Collections.synchronizedList( new ArrayList<Purchase>() );
 
 	@Value( "${products.data.path}" )
 	protected String dataPath;

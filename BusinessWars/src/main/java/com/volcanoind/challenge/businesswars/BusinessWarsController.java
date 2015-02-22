@@ -36,9 +36,7 @@ public class BusinessWarsController {
 	@RequestMapping( value = "/inventory/{sku}", method = RequestMethod.POST )
 	@ResponseBody
 	public Purchase buy(@PathVariable int sku, @RequestBody Bid bid) {
-		Purchase sale = invMgr.buyItem( bid );
-		
-		return sale;
+		return invMgr.buyItem( bid );
 	}
 	
 	@RequestMapping( value = "/purchases", method = RequestMethod.GET )

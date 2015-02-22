@@ -33,7 +33,7 @@ public class InventoryManager {
 	private List<Purchase> history = Collections.synchronizedList( new ArrayList<Purchase>() );
 
 	@Value( "${products.data.path}" )
-	private String dataPath;
+	protected String dataPath;
 
 	@PostConstruct
 	public void init() throws IOException {

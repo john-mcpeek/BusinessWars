@@ -77,7 +77,7 @@ public class InventoryManager {
 	}
 
 	public Transaction buyItem(TxRequest bid) {
-		boolean allOrNone = bid.isAllOrNone();
+		boolean allOrNone = bid.getAllOrNone();
 
 		Transaction tx = new Transaction( UUID.randomUUID().toString() );
 

@@ -5,6 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -22,8 +27,25 @@ public class GlobalExceptionHandler {
 		if ( AnnotationUtils.findAnnotation( e.getClass(), ResponseStatus.class ) != null ) {
 			throw e;
 		}
-
-		if ( e instanceof ResponseCodeException ) {
+		
+		if ( e instanceof HttpMessageNotReadableException ) {
+			String[] parts = e.getMessage().split( "\n" );
+			
+			return new ResponseEntity<>( parts[ 0 ], HttpStatus.BAD_REQUEST );
+		}
+		else if ( e instanceof MethodArgumentNotValidException ) {
+			String msg = "";
+			
+			MethodArgumentNotValidException validationException = (MethodArgumentNotValidException) e;
+			BindingResult bindResult = validationException.getBindingResult();
+			
+			for ( FieldError err : bindResult.getFieldErrors() ) {
+				msg += "Field: '" + err.getField() + "' " + err.getDefaultMessage() + ". Rejected value: " + err.getRejectedValue() + "\n";
+			}
+			
+			return new ResponseEntity<>( msg, HttpStatus.BAD_REQUEST );
+		}
+		else if ( e instanceof ResponseCodeException ) {
 			return new ResponseEntity<>( e.getMessage(), ( (ResponseCodeException) e ).getStatus() );
 		}
 		else {

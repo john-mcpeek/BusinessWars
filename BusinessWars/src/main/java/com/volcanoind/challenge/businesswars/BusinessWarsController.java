@@ -11,9 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.volcanoind.challenge.businesswars.domain.Bid;
-import com.volcanoind.challenge.businesswars.domain.Purchase;
+import com.volcanoind.challenge.businesswars.domain.LineItem;
 import com.volcanoind.challenge.businesswars.domain.Product;
+import com.volcanoind.challenge.businesswars.domain.Transaction;
+import com.volcanoind.challenge.businesswars.domain.TxRequest;
 
 @Controller
 public class BusinessWarsController {
@@ -21,27 +22,33 @@ public class BusinessWarsController {
 	@Autowired
 	private InventoryManager invMgr;
 	
-	@RequestMapping( value = "/products", method = RequestMethod.GET )
+	@RequestMapping( value = "/catalog", method = RequestMethod.GET )
 	@ResponseBody
 	public Collection<Product> products() {
 		return invMgr.getProducts();
 	}
 	
+	@RequestMapping( value = "/inventory", method = RequestMethod.GET )
+	@ResponseBody
+	public Collection<LineItem> inventory() {
+		return invMgr.getStock();
+	}
+	
 	@RequestMapping( value = "/inventory/{sku}", method = RequestMethod.GET )
 	@ResponseBody
 	public Product inventory(@PathVariable String sku) {
-		return invMgr.getQuote( sku );
+		return invMgr.getStock( sku );
 	}
 	
 	@RequestMapping( value = "/inventory/{sku}", method = RequestMethod.POST )
 	@ResponseBody
-	public Purchase buy(@PathVariable int sku, @RequestBody Bid bid) {
+	public Transaction buy(@PathVariable int sku, @RequestBody TxRequest bid) {
 		return invMgr.buyItem( bid );
 	}
 	
 	@RequestMapping( value = "/purchases", method = RequestMethod.GET )
 	@ResponseBody
-	public List<Purchase> salesHistory() {
+	public List<Transaction> salesHistory() {
 		return invMgr.getSalesHistory();
 	}
 }

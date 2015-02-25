@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
@@ -20,17 +19,20 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.volcanoind.challenge.businesswars.domain.Bid;
-import com.volcanoind.challenge.businesswars.domain.Purchase;
+import com.volcanoind.challenge.businesswars.domain.LineItem;
 import com.volcanoind.challenge.businesswars.domain.Product;
+import com.volcanoind.challenge.businesswars.domain.Transaction;
+import com.volcanoind.challenge.businesswars.domain.TxLineItem;
+import com.volcanoind.challenge.businesswars.domain.TxRequest;
 import com.volcanoind.challenge.businesswars.exceptions.PriceMismatchException;
 import com.volcanoind.challenge.businesswars.exceptions.ProductNotFoundException;
 
 @Component
 public class InventoryManager {
-	protected Map<String, Product> stockOnHand = new HashMap<String, Product>();
+	protected Map<String, Product> products = new HashMap<String, Product>();
+	protected Map<String, LineItem> stockOnHand = new HashMap<String, LineItem>();
 	
-	protected List<Purchase> history = Collections.synchronizedList( new ArrayList<Purchase>() );
+	protected List<Transaction> history = Collections.synchronizedList( new ArrayList<Transaction>() );
 
 	@Value( "${products.data.path}" )
 	protected String dataPath;
@@ -45,49 +47,64 @@ public class InventoryManager {
 				String name = record.get( "name" );
 				String price = record.get( "price" );
 				String qty = record.get( "qty" );
-
-				Product product = new Product( sku, name, price, qty );
-				stockOnHand.put( product.getSku(), product );
+				
+				Product product = new Product( sku, name, price );
+				LineItem lineItem = new LineItem( product, qty );
+				
+				stockOnHand.put( sku, lineItem );
+				products.put( sku, product );
 			}
 		}
 	}
 
 	public Collection<Product> getProducts() {
+		return products.values();
+	}
+
+	public Collection<LineItem> getStock() {
 		return stockOnHand.values();
 	}
 
-	public Product getQuote(String sku) {
-		Product product = stockOnHand.get( sku );
+	public Product getStock(String sku) {
+		LineItem lineItem = stockOnHand.get( sku );
 		
-		if ( product == null ) {
+		if ( lineItem == null ) {
 			throw new ProductNotFoundException();
 		}
 		
-		return product;
+		return lineItem;
 	}
 
-	public Purchase buyItem(Bid bid) {
-		Product product = stockOnHand.get( bid.getSku() );
+	public Transaction buyItem(TxRequest bid) {
+		Transaction tx = new Transaction();// ( product, takenFromStock, UUID.randomUUID().toString() );
 		
-		if ( product == null ) {
-			throw new ProductNotFoundException();
-		}
-
-		synchronized ( product ) {
-			BigDecimal price = bid.getPrice();
-			if ( product.getPrice().compareTo( price ) != 0 ) {
-				throw new PriceMismatchException( price, product.getPrice() );
+		bid.getLineItems().forEach( bidLine -> {
+			LineItem lineItem = stockOnHand.get( bidLine.getSku() );
+			
+			if ( lineItem == null ) {
+				throw new ProductNotFoundException();
 			}
 
-			int takenFromStock = product.takeFromStock( bid );
-			Purchase puchase = new Purchase( product, takenFromStock, UUID.randomUUID().toString() );
-			history.add( puchase );
+			synchronized ( lineItem ) {
+				BigDecimal price = bidLine.getPrice();
+				
+				TxLineItem responseItem = new TxLineItem();
+				if ( lineItem.getPrice().compareTo( price ) == 0 ) {
+					responseItem.setAccepted( true );
+				}
 
-			return puchase;
-		}
+				int takenFromStock = lineItem.takeFromStock( bidLine, true );
+				
+				tx.addLineItem( responseItem );
+			}
+		} );
+		
+		history.add( tx );
+
+		return tx;		
 	}
 	
-	public List<Purchase> getSalesHistory() {
+	public List<Transaction> getSalesHistory() {
 		return history;
 	}
 }

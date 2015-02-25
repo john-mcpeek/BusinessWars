@@ -3,6 +3,8 @@ package com.volcanoind.challenge.businesswars;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.Before;
@@ -12,7 +14,10 @@ import org.junit.rules.ExpectedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.volcanoind.challenge.businesswars.domain.LineItem;
 import com.volcanoind.challenge.businesswars.domain.Product;
+import com.volcanoind.challenge.businesswars.domain.TxRequest;
+import com.volcanoind.challenge.businesswars.exceptions.ProductNotFoundException;
 
 public class InventoryManagerTests {
 	private static final Logger log = LoggerFactory.getLogger( InventoryManagerTests.class );
@@ -38,11 +43,11 @@ public class InventoryManagerTests {
 		assertTrue( products.size() > 0 );
 	}
 	
-//	@Test( expected = ProductNotFoundException.class )
-//	public void noSuchProduct() {		
-//		mgr.buyItem( new TxRequest( "ABC", 1, new BigDecimal( "11.99" ), true ) );
-//	}
-//	
+	@Test( expected = ProductNotFoundException.class )
+	public void noSuchProduct() {		
+		mgr.buyItem( new TxRequest( true, new BigDecimal( "11.99" ), Arrays.asList( new LineItem[] { new LineItem( "ABC", null, null, 0, null ) } ) ) );
+	}
+	
 //	@Test
 //	public void priceMisMatch() {
 //		thrown.expect( PriceMismatchException.class );

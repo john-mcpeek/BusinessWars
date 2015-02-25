@@ -7,7 +7,6 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,9 +48,9 @@ public class BusinessWarsController {
 		return invMgr.buyItem( bid );
 	}
 	
-	@RequestMapping( value = "/purchases", method = RequestMethod.GET )
+	@RequestMapping( value = "/accounts/{accountNumber}/transactions", method = RequestMethod.GET )
 	@ResponseBody
-	public List<Transaction> salesHistory() {
+	public List<Transaction> salesHistory(@PathVariable int accountNumber) {
 		return invMgr.getSalesHistory();
 	}
 }

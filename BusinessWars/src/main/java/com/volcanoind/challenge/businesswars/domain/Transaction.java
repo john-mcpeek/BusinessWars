@@ -5,12 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotEmpty;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

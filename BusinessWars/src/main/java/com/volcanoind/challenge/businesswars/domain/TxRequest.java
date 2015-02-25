@@ -30,4 +30,8 @@ public class TxRequest {
 	
 	@NotEmpty
 	private List<LineItem> lineItems = new ArrayList<LineItem>();
+	
+	public void addLineItem(TxLineItem item) {
+		lineItems.add( item );
+	}
 }

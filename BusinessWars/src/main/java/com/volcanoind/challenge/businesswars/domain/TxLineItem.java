@@ -1,5 +1,7 @@
 package com.volcanoind.challenge.businesswars.domain;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,9 +15,16 @@ public class TxLineItem extends LineItem {
 	
 	private boolean accepted;
 	
-	public TxLineItem(LineItem bidItem, boolean accepted) {
+	public TxLineItem(LineItem bidItem) {
 		super( bidItem );
 		
-		this.accepted = accepted;
+		accepted = true;
+	}
+	
+	public void reject() {
+		accepted = false;
+		qty = 0;
+		price = BigDecimal.ZERO;
+		subtotal = BigDecimal.ZERO;
 	}
 }

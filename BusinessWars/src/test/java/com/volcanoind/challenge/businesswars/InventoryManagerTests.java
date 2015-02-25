@@ -1,9 +1,8 @@
 package com.volcanoind.challenge.businesswars;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.Collection;
 
 import org.junit.Before;
@@ -13,11 +12,7 @@ import org.junit.rules.ExpectedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.volcanoind.challenge.businesswars.domain.TxRequest;
 import com.volcanoind.challenge.businesswars.domain.Product;
-import com.volcanoind.challenge.businesswars.exceptions.InsufficientStockException;
-import com.volcanoind.challenge.businesswars.exceptions.PriceMismatchException;
-import com.volcanoind.challenge.businesswars.exceptions.ProductNotFoundException;
 
 public class InventoryManagerTests {
 	private static final Logger log = LoggerFactory.getLogger( InventoryManagerTests.class );

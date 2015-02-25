@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
@@ -24,14 +25,14 @@ import com.volcanoind.challenge.businesswars.domain.Product;
 import com.volcanoind.challenge.businesswars.domain.Transaction;
 import com.volcanoind.challenge.businesswars.domain.TxLineItem;
 import com.volcanoind.challenge.businesswars.domain.TxRequest;
-import com.volcanoind.challenge.businesswars.exceptions.PriceMismatchException;
 import com.volcanoind.challenge.businesswars.exceptions.ProductNotFoundException;
 
 @Component
 public class InventoryManager {
 	protected Map<String, Product> products = new HashMap<String, Product>();
+
 	protected Map<String, LineItem> stockOnHand = new HashMap<String, LineItem>();
-	
+
 	protected List<Transaction> history = Collections.synchronizedList( new ArrayList<Transaction>() );
 
 	@Value( "${products.data.path}" )
@@ -47,10 +48,10 @@ public class InventoryManager {
 				String name = record.get( "name" );
 				String price = record.get( "price" );
 				String qty = record.get( "qty" );
-				
+
 				Product product = new Product( sku, name, price );
 				LineItem lineItem = new LineItem( product, qty );
-				
+
 				stockOnHand.put( sku, lineItem );
 				products.put( sku, product );
 			}
@@ -67,43 +68,65 @@ public class InventoryManager {
 
 	public Product getStock(String sku) {
 		LineItem lineItem = stockOnHand.get( sku );
-		
+
 		if ( lineItem == null ) {
 			throw new ProductNotFoundException();
 		}
-		
+
 		return lineItem;
 	}
 
 	public Transaction buyItem(TxRequest bid) {
-		Transaction tx = new Transaction();// ( product, takenFromStock, UUID.randomUUID().toString() );
-		
+		boolean allOrNone = bid.isAllOrNone();
+
+		Transaction tx = new Transaction( UUID.randomUUID().toString() );
+
 		bid.getLineItems().forEach( bidLine -> {
 			LineItem lineItem = stockOnHand.get( bidLine.getSku() );
-			
+
 			if ( lineItem == null ) {
 				throw new ProductNotFoundException();
 			}
 
+			TxLineItem txLineItem = new TxLineItem( bidLine );
+			tx.addLineItem( txLineItem );
+
 			synchronized ( lineItem ) {
-				BigDecimal price = bidLine.getPrice();
-				
-				TxLineItem responseItem = new TxLineItem();
-				if ( lineItem.getPrice().compareTo( price ) == 0 ) {
-					responseItem.setAccepted( true );
+				int qty = lineItem.getQty();
+
+				BigDecimal bidPrice = bidLine.getPrice();
+				int bidRequest = bidLine.getQty();
+
+				boolean pricesMisMatch = lineItem.getPrice().compareTo( bidPrice ) != 0;
+				if ( pricesMisMatch ) {
+					txLineItem.reject();
+					return;
 				}
 
-				int takenFromStock = lineItem.takeFromStock( bidLine, true );
-				
-				tx.addLineItem( responseItem );
+				boolean hasEnough = ( qty >= bidRequest );
+				if ( hasEnough ) {
+					lineItem.setQty( qty - bidRequest );
+					txLineItem.setQty( bidRequest );
+				}
+				else {
+					if ( allOrNone ) {
+						txLineItem.reject();
+						return;
+					}
+					else {
+						lineItem.setQty( 0 );
+						txLineItem.setQty( qty );
+					}
+
+				}
 			}
 		} );
-		
+
 		history.add( tx );
 
-		return tx;		
+		return tx;
 	}
-	
+
 	public List<Transaction> getSalesHistory() {
 		return history;
 	}

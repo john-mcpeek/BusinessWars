@@ -9,7 +9,7 @@ import javax.validation.constraints.DecimalMin;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @NoArgsConstructor
 public class Transaction {
 	
-	@NotEmpty
+	@NotBlank
 	@JsonProperty( "trans-id" )
 	private String transId;
 

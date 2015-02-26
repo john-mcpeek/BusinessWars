@@ -19,8 +19,8 @@ import com.volcanoind.challenge.businesswars.domain.Product;
 import com.volcanoind.challenge.businesswars.domain.TxRequest;
 import com.volcanoind.challenge.businesswars.exceptions.ProductNotFoundException;
 
-public class InventoryManagerTests {
-	private static final Logger log = LoggerFactory.getLogger( InventoryManagerTests.class );
+public class InventoryManagerTest {
+	private static final Logger log = LoggerFactory.getLogger( InventoryManagerTest.class );
 
 	private InventoryManagerTester mgr;
 	

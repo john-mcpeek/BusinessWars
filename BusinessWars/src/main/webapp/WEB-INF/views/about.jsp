@@ -3,6 +3,7 @@
 <%@page import="java.util.Set"%>
 <%@page import="java.util.Properties"%>
 <%@page import="java.net.InetAddress"%>
+<% response.addHeader( "X-UA-Compatible", "IE=edge" ); %>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -29,7 +30,7 @@
 	    <h1>Build Info</h1>
 	    <p><strong>Release Number:</strong> ${project.version}</p>
 	    <p><strong>Build Number:</strong> ${BUILD_NUMBER}</p>
-	    <p><strong>Build Date:</strong> ${project.version}</p>
+	    <p><strong>Build Date:</strong> ${build.timestamp}</p>
 	    <br/>
 	    <h1>Runtime</h1>
 	    <p><strong>Host Name:</strong> <%= InetAddress.getLocalHost().getCanonicalHostName() %></p>

@@ -9,7 +9,6 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-
 	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
 	<resources mapping="/res/**" location="/res/" />
 
@@ -18,9 +17,11 @@
 		<beans:property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
 		<beans:property name="prefix" value="/WEB-INF/views/" />
 		<beans:property name="suffix" value=".jsp" />
+		<beans:property name="exposedContextBeanNames" value="env-props"/>
 	</beans:bean>
 
 
 	<mvc:view-controller path="/index" view-name="/index" />
 	<mvc:view-controller path="/index.html" view-name="/index" />
+	<mvc:view-controller path="/about" view-name="/about" />
 </beans:beans>
